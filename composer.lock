@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "91ff1fe0506e95f293c4ee44a63c2e35",
+    "content-hash": "02343e3d7d1ec3a323b74c7765a0b87b",
     "packages": [
         {
             "name": "phpgt/typesafegetter",
-            "version": "v1.2.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhpGt/TypeSafeGetter.git",
-                "reference": "23d0093abb1b928917006e52065c14eecaeaaaa4"
+                "reference": "c04fadcdb92b774ba1fc489038d168a2d34fee7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhpGt/TypeSafeGetter/zipball/23d0093abb1b928917006e52065c14eecaeaaaa4",
-                "reference": "23d0093abb1b928917006e52065c14eecaeaaaa4",
+                "url": "https://api.github.com/repos/PhpGt/TypeSafeGetter/zipball/c04fadcdb92b774ba1fc489038d168a2d34fee7a",
+                "reference": "c04fadcdb92b774ba1fc489038d168a2d34fee7a",
                 "shasum": ""
             },
             "require": {
@@ -27,6 +27,7 @@
                 "phpstan/phpstan": "v1.8.0",
                 "phpunit/phpunit": "v9.5.21"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -46,7 +47,7 @@
             "description": "An interface for objects that expose type-safe getter methods.",
             "support": {
                 "issues": "https://github.com/PhpGt/TypeSafeGetter/issues",
-                "source": "https://github.com/PhpGt/TypeSafeGetter/tree/v1.2.3"
+                "source": "https://github.com/PhpGt/TypeSafeGetter/tree/master"
             },
             "funding": [
                 {
@@ -54,7 +55,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-07-07T09:55:32+00:00"
+            "time": "2022-07-08T16:35:52+00:00"
         }
     ],
     "packages-dev": [
@@ -2135,7 +2136,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "phpgt/typesafegetter": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
