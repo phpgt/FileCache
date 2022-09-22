@@ -18,10 +18,10 @@ class FileAccess {
 	}
 
 	public function setData(string $name, mixed $value):void {
-		if(!is_dir($this->dirPath)) {
-			mkdir($this->dirPath, 0775, true);
-		}
 		$filePath = "$this->dirPath/$name";
+		if(!is_dir(dirname($filePath))) {
+			mkdir(dirname($filePath), 0775, true);
+		}
 		file_put_contents($filePath, serialize($value));
 	}
 
