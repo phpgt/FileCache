@@ -1,17 +1,17 @@
 Cache data in local files.
 ==========================
 
-Short blurb.
+Making expensive operations like HTTP calls or database queries can be minimised by caching the result of the operations in local files. This can improve performance, reduce network usage, and avoid rate limiting, to name some common benefits. This library provides a single function to define where to cache, what to cache, and when to cache. A validity of 1 hour is set by default, if the valid time is not specified.
 
 ***
 
 <a href="https://github.com/PhpGt/FileCache/actions" target="_blank">
 	<img src="https://badge.status.php.gt/filecache-build.svg" alt="Build status" />
 </a>
-<a href="https://scrutinizer-ci.com/g/PhpGt/FileCache" target="_blank">
+<a href="https://app.codacy.com/gh/PhpGt/FileCache" target="_blank">
 	<img src="https://badge.status.php.gt/filecache-quality.svg" alt="Code quality" />
 </a>
-<a href="https://scrutinizer-ci.com/g/PhpGt/FileCache" target="_blank">
+<a href="https://app.codecov.io/gh/PhpGt/FileCache" target="_blank">
 	<img src="https://badge.status.php.gt/filecache-coverage.svg" alt="Code coverage" />
 </a>
 <a href="https://packagist.org/packages/PhpGt/FileCache" target="_blank">

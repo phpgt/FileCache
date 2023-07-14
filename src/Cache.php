@@ -58,8 +58,8 @@ class Cache implements CallbackTypeSafeGetter {
 			return $value;
 		}
 		elseif(is_int($value)) {
-			$dt = new DateTimeImmutable();
-			return $dt->setTimestamp($value);
+			$dateTime = new DateTimeImmutable();
+			return $dateTime->setTimestamp($value);
 		}
 
 		return new DateTimeImmutable($value);
