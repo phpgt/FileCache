@@ -5,7 +5,7 @@
 
 	"require": {
 		"php": ">=8.1",
-		"phpgt/typesafegetter": "^v1.2.4"
+		"phpgt/typesafegetter": "^v1.3"
 	},
 
 	"require-dev": {

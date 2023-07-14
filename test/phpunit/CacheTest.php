@@ -86,13 +86,14 @@ class CacheTest extends TestCase {
 		self::assertSame($value, $sut->getDateTime("test", fn() => 123)->format("Y-m-d"));
 	}
 
-	public function testGetClass():void {
+	public function testGetInstance():void {
 		$value = new StdClass();
 		$value->name = uniqid();
+
 		$sut = $this->getSut([
 			"test" => serialize($value),
 		]);
-		$class = $sut->getClass(StdClass::class, "test", fn() => false);
+		$class = $sut->getInstance("test", StdClass::class, fn() => false);
 		self::assertSame($value->name, $class->name);
 	}
 

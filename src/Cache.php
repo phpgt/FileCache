@@ -67,10 +67,10 @@ class Cache implements CallbackTypeSafeGetter {
 
 	/**
 	 * @template T
-	 * @param class-string<T> $className
+	 * @param class-string<T> $name
 	 * @return T
 	 */
-	public function getClass(string $className, string $name, callable $callback, int $secondsValid = self::DEFAULT_SECONDS_VALID):object {
+	public function getInstance(string $name, string $className, callable $callback, int $secondsValid = self::DEFAULT_SECONDS_VALID):object {
 		$serialized = $this->get($name, $callback, $secondsValid);
 		$value = unserialize($serialized);
 		if(get_class($value) !== $className) {
