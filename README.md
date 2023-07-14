@@ -8,10 +8,10 @@ Short blurb.
 <a href="https://github.com/PhpGt/FileCache/actions" target="_blank">
 	<img src="https://badge.status.php.gt/filecache-build.svg" alt="Build status" />
 </a>
-<a href="https://scrutinizer-ci.com/g/PhpGt/FileCache" target="_blank">
+<a href="https://app.codacy.com/gh/PhpGt/FileCache" target="_blank">
 	<img src="https://badge.status.php.gt/filecache-quality.svg" alt="Code quality" />
 </a>
-<a href="https://scrutinizer-ci.com/g/PhpGt/FileCache" target="_blank">
+<a href="https://app.codecov.io/gh/PhpGt/FileCache" target="_blank">
 	<img src="https://badge.status.php.gt/filecache-coverage.svg" alt="Code coverage" />
 </a>
 <a href="https://packagist.org/packages/PhpGt/FileCache" target="_blank">
