@@ -91,7 +91,7 @@ class CacheTest extends TestCase {
 		$value->name = uniqid();
 
 		$sut = $this->getSut([
-			"test" => serialize($value),
+			"test" => $value,
 		]);
 		$class = $sut->getInstance("test", StdClass::class, fn() => false);
 		self::assertSame($value->name, $class->name);
