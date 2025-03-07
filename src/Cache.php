@@ -65,6 +65,15 @@ class Cache implements CallbackTypeSafeGetter {
 		return new DateTimeImmutable($value);
 	}
 
+	public function getArray(string $name, callable $callback, int $secondsValid = self::DEFAULT_SECONDS_VALID):array {
+		$value = $this->get($name, $callback, $secondsValid);
+		if(!is_array($value)) {
+			throw new TypeError("Value with key '$name' is not an array");
+		}
+
+		return $value;
+	}
+
 	/**
 	 * @template T
 	 * @param class-string<T> $name

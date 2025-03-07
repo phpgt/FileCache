@@ -97,6 +97,24 @@ class CacheTest extends TestCase {
 		self::assertSame($value->name, $class->name);
 	}
 
+	public function testGetArray():void {
+		$value = [1, 2, 3];
+		$sut = $this->getSut([
+			"numbers" => $value,
+		]);
+		self::assertSame($value, $sut->getArray("numbers", fn() => []));
+	}
+
+	public function testGetArray_notArray():void {
+		$value = (object)[1, 2, 3];
+		$sut = $this->getSut([
+			"numbers" => $value,
+		]);
+		self::expectException(\TypeError::class);
+		self::expectExceptionMessage("Value with key 'numbers' is not an array");
+		$sut->getArray("numbers", fn() => []);
+	}
+
 	private function getSut(array $mockFiles = []):Cache {
 		$mockFileAccess = null;
 		if(!empty($mockFiles)) {
