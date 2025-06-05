@@ -76,7 +76,7 @@ class Cache implements CallbackTypeSafeGetter {
 
 	/**
 	 * @template T
-	 * @param class-string<T> $name
+	 * @param class-string<T> $className
 	 * @return T
 	 */
 	public function getInstance(string $name, string $className, callable $callback, int $secondsValid = self::DEFAULT_SECONDS_VALID):object {
