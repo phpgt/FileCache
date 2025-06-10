@@ -76,6 +76,58 @@ class Cache implements CallbackTypeSafeGetter {
 	/**
 	 * @template T
 	 * @param class-string<T> $className
+	 * @return array<T>
+	 */
+	public function getTypedArray(string $name, string $className, callable $callback):array {
+		$array = $this->get($name, $callback);
+		if(!is_array($array)) {
+			throw new TypeError("Value with key '$name' is not an array");
+		}
+
+		foreach($array as $key => $value) {
+			if($className === "int" || $className === "integer") {
+				if(!is_int($value)) {
+					if(is_numeric($value)) {
+						$array[$key] = (int)$value;
+					}
+					else {
+						throw new TypeError("Array value at key '$key' is not an integer");
+					}
+				}
+			}
+			elseif($className === "float" || $className === "double") {
+				if(!is_float($value)) {
+					if(is_numeric($value)) {
+						$array[$key] = (float)$value;
+					}
+					else {
+						throw new TypeError("Array value at key '$key' is not a float");
+					}
+				}
+			}
+			elseif($className === "string") {
+				if(!is_string($value)) {
+					$array[$key] = (string)$value;
+				}
+			}
+			elseif($className === "bool" || $className === "boolean") {
+				if(!is_bool($value)) {
+					$array[$key] = (bool)$value;
+				}
+			}
+			else {
+				if(!$value instanceof $className) {
+					throw new TypeError("Array value at key '$key' is not an instance of $className");
+				}
+			}
+		}
+
+		return $array;
+	}
+
+	/**
+	 * @template T
+	 * @param class-string<T> $className
 	 * @return T
 	 */
 	public function getInstance(string $name, string $className, callable $callback):object {
