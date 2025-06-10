@@ -7,11 +7,11 @@ use Gt\TypeSafeGetter\CallbackTypeSafeGetter;
 use TypeError;
 
 class Cache implements CallbackTypeSafeGetter {
-	const DEFAULT_SECONDS_VALID = 60 * 60; // 1 hour of validity.
 	private FileAccess $fileAccess;
 
 	public function __construct(
 		string $path = "cache",
+		private readonly int $secondsValid = 60 * 60, // 1 hour of validity by default
 		?FileAccess $fileAccess = null,
 	) {
 		if(is_null($fileAccess)) {
@@ -23,10 +23,9 @@ class Cache implements CallbackTypeSafeGetter {
 	public function get(
 		string $name,
 		callable $callback,
-		int $secondsValid = self::DEFAULT_SECONDS_VALID
 	):mixed {
 		try {
-			$this->fileAccess->checkValidity($name, $secondsValid);
+			$this->fileAccess->checkValidity($name, $this->secondsValid);
 			return $this->fileAccess->getData($name);
 		}
 		catch(FileNotFoundException|CacheInvalidException) {
@@ -36,24 +35,24 @@ class Cache implements CallbackTypeSafeGetter {
 		}
 	}
 
-	public function getString(string $name, callable $callback, int $secondsValid = self::DEFAULT_SECONDS_VALID):string {
-		return (string)$this->get($name, $callback, $secondsValid);
+	public function getString(string $name, callable $callback):string {
+		return (string)$this->get($name, $callback);
 	}
 
-	public function getInt(string $name, callable $callback, int $secondsValid = self::DEFAULT_SECONDS_VALID):int {
-		return (int)$this->get($name, $callback, $secondsValid);
+	public function getInt(string $name, callable $callback):int {
+		return (int)$this->get($name, $callback);
 	}
 
-	public function getFloat(string $name, callable $callback, int $secondsValid = self::DEFAULT_SECONDS_VALID):float {
-		return (float)$this->get($name, $callback, $secondsValid);
+	public function getFloat(string $name, callable $callback):float {
+		return (float)$this->get($name, $callback);
 	}
 
-	public function getBool(string $name, callable $callback, int $secondsValid = self::DEFAULT_SECONDS_VALID):bool {
-		return (bool)$this->get($name, $callback, $secondsValid);
+	public function getBool(string $name, callable $callback):bool {
+		return (bool)$this->get($name, $callback);
 	}
 
-	public function getDateTime(string $name, callable $callback, int $secondsValid = self::DEFAULT_SECONDS_VALID):DateTimeInterface {
-		$value = $this->get($name, $callback, $secondsValid);
+	public function getDateTime(string $name, callable $callback):DateTimeInterface {
+		$value = $this->get($name, $callback);
 		if($value instanceof DateTimeInterface) {
 			return $value;
 		}
@@ -65,8 +64,8 @@ class Cache implements CallbackTypeSafeGetter {
 		return new DateTimeImmutable($value);
 	}
 
-	public function getArray(string $name, callable $callback, int $secondsValid = self::DEFAULT_SECONDS_VALID):array {
-		$value = $this->get($name, $callback, $secondsValid);
+	public function getArray(string $name, callable $callback):array {
+		$value = $this->get($name, $callback);
 		if(!is_array($value)) {
 			throw new TypeError("Value with key '$name' is not an array");
 		}
@@ -79,8 +78,8 @@ class Cache implements CallbackTypeSafeGetter {
 	 * @param class-string<T> $className
 	 * @return T
 	 */
-	public function getInstance(string $name, string $className, callable $callback, int $secondsValid = self::DEFAULT_SECONDS_VALID):object {
-		$value = $this->get($name, $callback, $secondsValid);
+	public function getInstance(string $name, string $className, callable $callback):object {
+		$value = $this->get($name, $callback);
 		if(get_class($value) !== $className) {
 			throw new TypeError("Value is not of type $className");
 		}

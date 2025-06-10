@@ -126,7 +126,7 @@ class CacheTest extends TestCase {
 		}
 		return new Cache(
 			sys_get_temp_dir() . "/phpgt-filecache",
-			$mockFileAccess,
+			fileAccess: $mockFileAccess,
 		);
 	}
 }
