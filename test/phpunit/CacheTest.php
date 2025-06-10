@@ -100,12 +100,44 @@ class CacheTest extends TestCase {
 		self::assertSame($value->name, $class->name);
 	}
 
+	public function testGetInstance_error():void {
+		$value = new StdClass();
+		$value->name = uniqid();
+
+		$sut = $this->getSut([
+			"test" => $value,
+		]);
+		self::expectException(TypeError::class);
+		self::expectExceptionMessage("Value is not an instance of SplFileInfo");
+		$sut->getInstance("test", SplFileInfo::class, fn() => false);
+	}
+
 	public function testGetArray():void {
 		$value = [1, 2, 3];
 		$sut = $this->getSut([
 			"numbers" => $value,
 		]);
 		self::assertSame($value, $sut->getArray("numbers", fn() => []));
+	}
+
+	public function testGetArray_notArray():void {
+		$value = (object)[1, 2, 3];
+		$sut = $this->getSut([
+			"numbers" => $value,
+		]);
+		self::expectException(TypeError::class);
+		self::expectExceptionMessage("Data 'numbers' is not an array");
+		$sut->getArray("numbers", fn() => []);
+	}
+
+	public function testGetTypedArray_notArray():void {
+		$value = (object)[1, 2, 3];
+		$sut = $this->getSut([
+			"numbers" => $value,
+		]);
+		self::expectException(TypeError::class);
+		self::expectExceptionMessage("Data 'numbers' is not an array");
+		$sut->getTypedArray("numbers", "int", fn() => []);
 	}
 
 	public function testGetTypedArray_int():void {
@@ -186,18 +218,9 @@ class CacheTest extends TestCase {
 		$sut = $this->getSut([
 			"files" => $value,
 		]);
+		self::expectExceptionMessage("Array value at key '1' is not an instance of SplFileInfo");
 		self::expectException(TypeError::class);
 		$sut->getTypedArray("files", SplFileInfo::class, fn() => []);
-	}
-
-	public function testGetArray_notArray():void {
-		$value = (object)[1, 2, 3];
-		$sut = $this->getSut([
-			"numbers" => $value,
-		]);
-		self::expectException(TypeError::class);
-		self::expectExceptionMessage("Value with key 'numbers' is not an array");
-		$sut->getArray("numbers", fn() => []);
 	}
 
 	private function getSut(array $mockFiles = []):Cache {
