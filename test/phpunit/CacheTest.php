@@ -4,7 +4,10 @@ namespace Gt\FileCache\Test;
 use Gt\FileCache\Cache;
 use Gt\FileCache\FileAccess;
 use PHPUnit\Framework\TestCase;
+use SplFileInfo;
+use SplFixedArray;
 use stdClass;
+use TypeError;
 
 class CacheTest extends TestCase {
 	public function tearDown():void {
@@ -97,6 +100,18 @@ class CacheTest extends TestCase {
 		self::assertSame($value->name, $class->name);
 	}
 
+	public function testGetInstance_error():void {
+		$value = new StdClass();
+		$value->name = uniqid();
+
+		$sut = $this->getSut([
+			"test" => $value,
+		]);
+		self::expectException(TypeError::class);
+		self::expectExceptionMessage("Value is not an instance of SplFileInfo");
+		$sut->getInstance("test", SplFileInfo::class, fn() => false);
+	}
+
 	public function testGetArray():void {
 		$value = [1, 2, 3];
 		$sut = $this->getSut([
@@ -110,9 +125,102 @@ class CacheTest extends TestCase {
 		$sut = $this->getSut([
 			"numbers" => $value,
 		]);
-		self::expectException(\TypeError::class);
-		self::expectExceptionMessage("Value with key 'numbers' is not an array");
+		self::expectException(TypeError::class);
+		self::expectExceptionMessage("Data 'numbers' is not an array");
 		$sut->getArray("numbers", fn() => []);
+	}
+
+	public function testGetTypedArray_notArray():void {
+		$value = (object)[1, 2, 3];
+		$sut = $this->getSut([
+			"numbers" => $value,
+		]);
+		self::expectException(TypeError::class);
+		self::expectExceptionMessage("Data 'numbers' is not an array");
+		$sut->getTypedArray("numbers", "int", fn() => []);
+	}
+
+	public function testGetTypedArray_int():void {
+		$value = [1, "2", 3.000];
+		$sut = $this->getSut([
+			"numbers" => $value,
+		]);
+		$typedArray = $sut->getTypedArray("numbers", "int", fn() => []);
+		foreach($typedArray as $value) {
+			self::assertIsInt($value);
+		}
+	}
+
+	public function testGetTypedArray_intFailure():void {
+		$value = [1, "2", 3.000, "four"];
+		$sut = $this->getSut([
+			"numbers" => $value,
+		]);
+		self::expectException(TypeError::class);
+		$sut->getTypedArray("numbers", "int", fn() => []);
+	}
+
+	public function testGetTypedArray_float():void {
+		$value = [1, "2", 3.000];
+		$sut = $this->getSut([
+			"numbers" => $value,
+		]);
+		$typedArray = $sut->getTypedArray("numbers", "float", fn() => []);
+		foreach($typedArray as $value) {
+			self::assertIsFloat($value);
+		}
+	}
+
+	public function testGetTypedArray_floatFailure():void {
+		$value = [1, "2", 3.000, "four"];
+		$sut = $this->getSut([
+			"numbers" => $value,
+		]);
+		self::expectException(TypeError::class);
+		$sut->getTypedArray("numbers", "float", fn() => []);
+	}
+
+	public function testGetTypedArray_string():void {
+		$value = [1, "2", 3.000, "four"];
+		$sut = $this->getSut([
+			"numbers" => $value,
+		]);
+		$typedArray= $sut->getTypedArray("numbers", "string", fn() => []);
+		foreach($typedArray as $value) {
+			self::assertIsString($value);
+		}
+	}
+
+	public function testGetTypedArray_bool():void {
+		$value = [0, "1", false, true, [], new StdClass()];
+		$sut = $this->getSut([
+			"booleans" => $value,
+		]);
+		$typedArray= $sut->getTypedArray("booleans", "bool", fn() => []);
+		foreach($typedArray as $i => $value) {
+			self::assertSame((bool)($i % 2), $value, $i);
+		}
+	}
+
+	public function testGetTypedArray_class():void {
+		$value = [new SplFileInfo(__FILE__), new SplFileInfo(__DIR__)];
+		$sut = $this->getSut([
+			"files" => $value,
+		]);
+		$typedArray= $sut->getTypedArray("files", SplFileInfo::class, fn() => []);
+		foreach($typedArray as $value) {
+			self::assertInstanceOf(SplFileInfo::class, $value);
+		}
+	}
+
+	public function testGetTypedArray_classError():void {
+		$value = [new SplFileInfo(__FILE__), new SplFixedArray(), new SplFileInfo(__DIR__)];
+		$sut = $this->getSut([
+			"files" => $value,
+		]);
+		self::expectExceptionMessage("Array value at key '1' is not an instance of SplFileInfo");
+		self::expectException(TypeError::class);
+		$sut->getTypedArray("files", SplFileInfo::class, fn() => []);
 	}
 
 	private function getSut(array $mockFiles = []):Cache {

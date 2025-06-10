@@ -67,10 +67,110 @@ class Cache implements CallbackTypeSafeGetter {
 	public function getArray(string $name, callable $callback):array {
 		$value = $this->get($name, $callback);
 		if(!is_array($value)) {
-			throw new TypeError("Value with key '$name' is not an array");
+			throw new TypeError("Data '$name' is not an array");
 		}
 
 		return $value;
+	}
+
+	/**
+	 * @template T
+	 * @param class-string<T> $className
+	 * @return array<T>
+	 */
+	public function getTypedArray(string $name, string $className, callable $callback):array {
+		$array = $this->get($name, $callback);
+		if(!is_array($array)) {
+			throw new TypeError("Data '$name' is not an array");
+		}
+
+		foreach($array as $key => $value) {
+			$array[$key] = $this->validateAndConvertValue($value, $className, $key);
+		}
+
+		return $array;
+	}
+
+	/**
+	 * @template T
+	 * @param mixed $value
+	 * @param class-string<T> $className
+	 * @param string|int $key
+	 * @return T
+	 */
+	private function validateAndConvertValue(mixed $value, string $className, string|int $key): mixed {
+		return match(strtolower($className)) {
+			"int", "integer" => $this->validateAndConvertInt($value, $key),
+			"float", "double" => $this->validateAndConvertFloat($value, $key),
+			"string" => $this->convertToString($value),
+			"bool", "boolean" => $this->convertToBool($value),
+			default => $this->validateInstance($value, $className, $key),
+		};
+	}
+
+	/**
+	 * @param mixed $value
+	 * @param string|int $key
+	 * @return int
+	 */
+	private function validateAndConvertInt(mixed $value, string|int $key): int {
+		if(is_int($value)) {
+			return $value;
+		}
+
+		if(is_numeric($value)) {
+			return (int)$value;
+		}
+
+		throw new TypeError("Array value at key '$key' is not an integer");
+	}
+
+	/**
+	 * @param mixed $value
+	 * @param string|int $key
+	 * @return float
+	 */
+	private function validateAndConvertFloat(mixed $value, string|int $key): float {
+		if(is_float($value)) {
+			return $value;
+		}
+
+		if(is_numeric($value)) {
+			return (float)$value;
+		}
+
+		throw new TypeError("Array value at key '$key' is not a float");
+	}
+
+	/**
+	 * @param mixed $value
+	 * @return string
+	 */
+	private function convertToString(mixed $value): string {
+		return (string)$value;
+	}
+
+	/**
+	 * @param mixed $value
+	 * @return bool
+	 */
+	private function convertToBool(mixed $value): bool {
+		return (bool)$value;
+	}
+
+	/**
+	 * @template T
+	 * @param mixed $value
+	 * @param class-string<T> $className
+	 * @param string|int $key
+	 * @return T
+	 */
+	private function validateInstance(mixed $value, string $className, string|int $key): object {
+		if($value instanceof $className) {
+			return $value;
+		}
+
+		throw new TypeError("Array value at key '$key' is not an instance of $className");
 	}
 
 	/**
@@ -81,7 +181,7 @@ class Cache implements CallbackTypeSafeGetter {
 	public function getInstance(string $name, string $className, callable $callback):object {
 		$value = $this->get($name, $callback);
 		if(get_class($value) !== $className) {
-			throw new TypeError("Value is not of type $className");
+			throw new TypeError("Value is not an instance of $className");
 		}
 
 		return $value;

@@ -35,4 +35,13 @@ class FileAccess {
 			throw new CacheInvalidException($filePath);
 		}
 	}
+
+	public function invalidate(string $name):void {
+		$filePath = "$this->dirPath/$name";
+		if(!is_file($filePath)) {
+			return;
+		}
+
+		unlink($filePath);
+	}
 }
