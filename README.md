@@ -44,6 +44,10 @@ $location = $fileCache->get("lat-lon", $lookup);
 echo "Your location is: $location";
 ```
 
+If generating a fresh value fails, throw `Gt\FileCache\CacheValueGenerationException`
+from the callback. The cache will ignore that failure and skip writing a replacement
+value, which leaves `null` available as a legitimate cached value.
+
 # Proudly sponsored by
 
 [JetBrains Open Source sponsorship program](https://www.jetbrains.com/community/opensource/)

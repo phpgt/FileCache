@@ -2,7 +2,10 @@
 namespace Gt\FileCache\Test;
 
 use Gt\FileCache\Cache;
+use Gt\FileCache\CacheInvalidException;
+use Gt\FileCache\CacheValueGenerationException;
 use Gt\FileCache\FileAccess;
+use Gt\FileCache\FileNotFoundException;
 use PHPUnit\Framework\TestCase;
 use SplFileInfo;
 use SplFixedArray;
@@ -47,6 +50,52 @@ class CacheTest extends TestCase {
 		$result = $sut->get($name, $callback);
 		self::assertSame($value, $result);
 		self::assertSame(1, $count);
+	}
+
+	public function testGet_nullValueCanBeCached():void {
+		$sut = $this->getSut();
+		$count = 0;
+
+		$callback = function()use(&$count):null {
+			$count++;
+			return null;
+		};
+
+		self::assertNull($sut->get("test-null", $callback));
+		self::assertNull($sut->get("test-null", $callback));
+		self::assertSame(1, $count);
+	}
+
+	public function testGet_generationExceptionDoesNotWriteInvalidValue():void {
+		$fileAccess = self::createMock(FileAccess::class);
+		$fileAccess->expects(self::once())
+			->method("checkValidity")
+			->with("test", 3600)
+			->willThrowException(new FileNotFoundException("test"));
+		$fileAccess->expects(self::never())
+			->method("setData");
+
+		$sut = new Cache(fileAccess: $fileAccess);
+
+		self::assertNull($sut->get("test", function():never {
+			throw new CacheValueGenerationException("Lookup failed");
+		}));
+	}
+
+	public function testGet_invalidCache_generationExceptionDoesNotWriteReplacement():void {
+		$fileAccess = self::createMock(FileAccess::class);
+		$fileAccess->expects(self::once())
+			->method("checkValidity")
+			->with("test", 3600)
+			->willThrowException(new CacheInvalidException("test"));
+		$fileAccess->expects(self::never())
+			->method("setData");
+
+		$sut = new Cache(fileAccess: $fileAccess);
+
+		self::assertNull($sut->get("test", function():never {
+			throw new CacheValueGenerationException("Lookup failed");
+		}));
 	}
 
 	public function testGetString():void {
