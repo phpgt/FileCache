@@ -64,6 +64,7 @@ class Cache implements CallbackTypeSafeGetter {
 		return new DateTimeImmutable($value);
 	}
 
+	/** @return array<mixed> */
 	public function getArray(string $name, callable $callback):array {
 		$value = $this->get($name, $callback);
 		if(!is_array($value)) {
@@ -74,9 +75,9 @@ class Cache implements CallbackTypeSafeGetter {
 	}
 
 	/**
-	 * @template T
-	 * @param class-string<T> $className
-	 * @return array<T>
+	 * @template TObject of object
+	 * @param class-string<TObject>|"int"|"integer"|"float"|"double"|"string"|"bool"|"boolean" $className
+	 * @phpstan-return ($className is class-string<TObject> ? array<TObject> : ($className is "int"|"integer" ? array<int> : ($className is "float"|"double" ? array<float> : ($className is "string" ? array<string> : array<bool>))))
 	 */
 	public function getTypedArray(string $name, string $className, callable $callback):array {
 		$array = $this->get($name, $callback);
@@ -84,6 +85,7 @@ class Cache implements CallbackTypeSafeGetter {
 			throw new TypeError("Data '$name' is not an array");
 		}
 
+		/** @var array<int|string, mixed> $array */
 		foreach($array as $key => $value) {
 			$array[$key] = $this->validateAndConvertValue($value, $className, $key);
 		}
@@ -92,11 +94,11 @@ class Cache implements CallbackTypeSafeGetter {
 	}
 
 	/**
-	 * @template T
+	 * @template TObject of object
 	 * @param mixed $value
-	 * @param class-string<T> $className
+	 * @param class-string<TObject>|"int"|"integer"|"float"|"double"|"string"|"bool"|"boolean" $className
 	 * @param string|int $key
-	 * @return T
+	 * @phpstan-return ($className is class-string<TObject> ? TObject : ($className is "int"|"integer" ? int : ($className is "float"|"double" ? float : ($className is "string" ? string : bool))))
 	 */
 	private function validateAndConvertValue(mixed $value, string $className, string|int $key): mixed {
 		return match(strtolower($className)) {
@@ -159,11 +161,11 @@ class Cache implements CallbackTypeSafeGetter {
 	}
 
 	/**
-	 * @template T
+	 * @template TObject of object
 	 * @param mixed $value
-	 * @param class-string<T> $className
+	 * @param class-string<TObject> $className
 	 * @param string|int $key
-	 * @return T
+	 * @return TObject
 	 */
 	private function validateInstance(mixed $value, string $className, string|int $key): object {
 		if($value instanceof $className) {
@@ -174,16 +176,17 @@ class Cache implements CallbackTypeSafeGetter {
 	}
 
 	/**
-	 * @template T
+	 * @template T of object
 	 * @param class-string<T> $className
 	 * @return T
 	 */
 	public function getInstance(string $name, string $className, callable $callback):object {
 		$value = $this->get($name, $callback);
-		if(get_class($value) !== $className) {
+		if(!$value instanceof $className) {
 			throw new TypeError("Value is not an instance of $className");
 		}
 
+		/** @var T $value */
 		return $value;
 	}
 }
