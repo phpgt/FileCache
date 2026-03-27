@@ -29,9 +29,14 @@ class Cache implements CallbackTypeSafeGetter {
 			return $this->fileAccess->getData($name);
 		}
 		catch(FileNotFoundException|CacheInvalidException) {
-			$value = $callback();
-			$this->fileAccess->setData($name, $value);
-			return $value;
+			try {
+				$value = $callback();
+				$this->fileAccess->setData($name, $value);
+				return $value;
+			}
+			catch(CacheValueGenerationException) {
+				return null;
+			}
 		}
 	}
 

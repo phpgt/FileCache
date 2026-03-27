@@ -17,7 +17,26 @@ $fileCache = new Gt\FileCache\Cache("/tmp/ip-address-geolocation");
 function httpJson(string $uri):object {
 	$ch = curl_init($uri);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	return json_decode(curl_exec($ch));
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+	$response = curl_exec($ch);
+	if($response === false) {
+		throw new Gt\FileCache\CacheValueGenerationException(curl_error($ch));
+	}
+
+	try {
+		return json_decode($response, flags: JSON_THROW_ON_ERROR);
+	}
+	catch(JsonException $exception) {
+		throw new Gt\FileCache\CacheValueGenerationException(
+			"Invalid JSON returned from $uri",
+			previous: $exception,
+		);
+	}
+	finally {
+		curl_close($ch);
+	}
 }
 
 $ipAddress = $fileCache->get("ip", function():string {
