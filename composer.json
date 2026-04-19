@@ -40,13 +40,14 @@
 
 	"autoload": {
 		"psr-4": {
+			"GT\\FileCache\\": "./src",
 			"Gt\\FileCache\\": "./src"
 		}
 	},
 
 	"autoload-dev": {
 		"psr-4": {
-			"Gt\\FileCache\\Test\\": "./test/phpunit"
+			"GT\\FileCache\\Test\\": "./test/phpunit"
 		}
 	},
 

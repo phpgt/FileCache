@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . "/../vendor/autoload.php";
 
-use Gt\FileCache\Cache;
+use GT\FileCache\Cache;
 
 $fileCache = new Cache("/tmp/phpgt-filecache-datetime");
 

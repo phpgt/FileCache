@@ -29,7 +29,7 @@ The first time we see the IP address will have to make an HTTP call, but subsequ
 
 ```php
 $ipAddress = $_SERVER["REMOTE_ADDR"];
-$fileCache = new Gt\FileCache\Cache("/tmp/ip-address-geolocation");
+$fileCache = new GT\FileCache\Cache("/tmp/ip-address-geolocation");
 
 // This function uses file_get_contents to contact the remote server
 // at ipinfo.io, a costly operation. We will pass the lookup function
@@ -44,7 +44,7 @@ $location = $fileCache->get("lat-lon", $lookup);
 echo "Your location is: $location";
 ```
 
-If generating a fresh value fails, throw `Gt\FileCache\CacheValueGenerationException`
+If generating a fresh value fails, throw `GT\FileCache\CacheValueGenerationException`
 from the callback. The cache will ignore that failure and skip writing a replacement
 value, which leaves `null` available as a legitimate cached value.
 

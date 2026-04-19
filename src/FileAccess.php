@@ -1,5 +1,5 @@
 <?php
-namespace Gt\FileCache;
+namespace GT\FileCache;
 
 class FileAccess {
 	public function __construct(

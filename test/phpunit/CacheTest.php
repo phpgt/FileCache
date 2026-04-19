@@ -1,11 +1,11 @@
 <?php
-namespace Gt\FileCache\Test;
+namespace GT\FileCache\Test;
 
-use Gt\FileCache\Cache;
-use Gt\FileCache\CacheInvalidException;
-use Gt\FileCache\CacheValueGenerationException;
-use Gt\FileCache\FileAccess;
-use Gt\FileCache\FileNotFoundException;
+use GT\FileCache\Cache;
+use GT\FileCache\CacheInvalidException;
+use GT\FileCache\CacheValueGenerationException;
+use GT\FileCache\FileAccess;
+use GT\FileCache\FileNotFoundException;
 use PHPUnit\Framework\TestCase;
 use SplFileInfo;
 use SplFixedArray;

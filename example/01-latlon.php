@@ -12,7 +12,7 @@
 require __DIR__ . "/../vendor/autoload.php";
 
 $startTime = microtime(true);
-$fileCache = new Gt\FileCache\Cache("/tmp/ip-address-geolocation");
+$fileCache = new GT\FileCache\Cache("/tmp/ip-address-geolocation");
 
 function httpJson(string $uri):object {
 	$ch = curl_init($uri);
@@ -22,14 +22,14 @@ function httpJson(string $uri):object {
 
 	$response = curl_exec($ch);
 	if($response === false) {
-		throw new Gt\FileCache\CacheValueGenerationException(curl_error($ch));
+		throw new GT\FileCache\CacheValueGenerationException(curl_error($ch));
 	}
 
 	try {
 		return json_decode($response, flags: JSON_THROW_ON_ERROR);
 	}
 	catch(JsonException $exception) {
-		throw new Gt\FileCache\CacheValueGenerationException(
+		throw new GT\FileCache\CacheValueGenerationException(
 			"Invalid JSON returned from $uri",
 			previous: $exception,
 		);
