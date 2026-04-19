@@ -40,6 +40,10 @@ class Cache implements CallbackTypeSafeGetter {
 		}
 	}
 
+	public function invalidate(string $name):void {
+		$this->fileAccess->invalidate($name);
+	}
+
 	public function getString(string $name, callable $callback):string {
 		return (string)$this->get($name, $callback);
 	}

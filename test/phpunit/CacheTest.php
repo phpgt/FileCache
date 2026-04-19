@@ -93,6 +93,23 @@ class CacheTest extends TestCase {
 		self::assertFileDoesNotExist(sys_get_temp_dir() . "/outside-cache");
 	}
 
+	public function testInvalidate_removesSingleCacheByKey():void {
+		$sut = $this->getSut();
+		$name = "invalidate-me";
+		$value = "cached-value";
+
+		self::assertSame($value, $sut->get($name, fn() => $value));
+
+		$expectedFile = sys_get_temp_dir()
+			. "/phpgt-filecache/"
+			. rawurlencode($name);
+		self::assertFileExists($expectedFile);
+
+		$sut->invalidate($name);
+
+		self::assertFileDoesNotExist($expectedFile);
+	}
+
 	public function testGet_generationExceptionDoesNotWriteInvalidValue():void {
 		$fileAccess = self::createMock(FileAccess::class);
 		$fileAccess->expects(self::once())
