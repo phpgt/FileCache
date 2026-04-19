@@ -66,6 +66,33 @@ class CacheTest extends TestCase {
 		self::assertSame(1, $count);
 	}
 
+	public function testGet_urlName_isEscapedToReadableFilename():void {
+		$sut = $this->getSut();
+		$name = "https://example.com/test";
+		$value = "cached-value";
+
+		self::assertSame($value, $sut->get($name, fn() => $value));
+
+		$expectedFile = sys_get_temp_dir()
+			. "/phpgt-filecache/"
+			. rawurlencode($name);
+		self::assertFileExists($expectedFile);
+		self::assertSame($value, unserialize(file_get_contents($expectedFile)));
+	}
+
+	public function testGet_urlName_doesNotTraverseFilesystem():void {
+		$sut = $this->getSut();
+		$name = "../outside-cache";
+		$value = "cached-value";
+
+		self::assertSame($value, $sut->get($name, fn() => $value));
+
+		$cacheDir = sys_get_temp_dir() . "/phpgt-filecache";
+		$expectedFile = $cacheDir . "/" . rawurlencode($name);
+		self::assertFileExists($expectedFile);
+		self::assertFileDoesNotExist(sys_get_temp_dir() . "/outside-cache");
+	}
+
 	public function testGet_generationExceptionDoesNotWriteInvalidValue():void {
 		$fileAccess = self::createMock(FileAccess::class);
 		$fileAccess->expects(self::once())
