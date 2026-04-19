@@ -1,5 +1,5 @@
 <?php
-namespace Gt\FileCache;
+namespace GT\FileCache;
 
 use DateTimeImmutable;
 use DateTimeInterface;

@@ -1,4 +1,4 @@
 <?php
-namespace Gt\FileCache;
+namespace GT\FileCache;
 
 class FileNotFoundException extends FileCacheException {}
