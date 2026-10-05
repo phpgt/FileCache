@@ -3,7 +3,7 @@ namespace GT\FileCache;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use Gt\TypeSafeGetter\CallbackTypeSafeGetter;
+use GT\TypeSafeGetter\CallbackTypeSafeGetter;
 use TypeError;
 
 class Cache implements CallbackTypeSafeGetter {
