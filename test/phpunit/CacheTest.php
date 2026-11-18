@@ -52,6 +52,44 @@ class CacheTest extends TestCase {
 		self::assertSame(1, $count);
 	}
 
+	public function testGet_zeroValidityCachesUntilInvalidated():void {
+		$sut = new Cache(sys_get_temp_dir() . "/phpgt-filecache", 0);
+		$count = 0;
+		$callback = function()use(&$count):int {
+			return ++$count;
+		};
+
+		self::assertSame(1, $sut->get("indefinite", $callback));
+		self::assertSame(1, $sut->get("indefinite", $callback));
+		self::assertSame(1, $count);
+
+		$sut->invalidate("indefinite");
+		self::assertSame(2, $sut->get("indefinite", $callback));
+	}
+
+	public function testGet_zeroValidityReadsOldCacheFromAnotherInstance():void {
+		$path = sys_get_temp_dir() . "/phpgt-filecache";
+		$sut = new Cache($path, 0);
+		self::assertSame("original", $sut->get("indefinite", fn() => "original"));
+		self::assertTrue(touch("$path/indefinite", time() - 31536000));
+		clearstatcache();
+
+		$sut = new Cache($path, 0);
+		self::assertSame("original", $sut->get("indefinite", function():never {
+			self::fail("An indefinite cache must not regenerate an old value.");
+		}));
+	}
+
+	public function testGet_positiveValidityRegeneratesExpiredCache():void {
+		$path = sys_get_temp_dir() . "/phpgt-filecache";
+		$sut = new Cache($path, 60);
+		self::assertSame("original", $sut->get("expired", fn() => "original"));
+		self::assertTrue(touch("$path/expired", time() - 120));
+		clearstatcache();
+
+		self::assertSame("replacement", $sut->get("expired", fn() => "replacement"));
+	}
+
 	public function testGet_nullValueCanBeCached():void {
 		$sut = $this->getSut();
 		$count = 0;
