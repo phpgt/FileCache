@@ -3,6 +3,9 @@ Cache data in local files.
 
 Making expensive operations like HTTP calls or database queries can be minimised by caching the result of the operations in local files. This can improve performance, reduce network usage, and avoid rate limiting, to name some common benefits. This library provides a single function to define where to cache, what to cache, and when to cache. A validity of 1 hour is set by default, if the valid time is not specified.
 
+Pass `secondsValid: 0` to the `Cache` constructor to cache indefinitely. The value
+is kept until you call `invalidate($name)` or remove its cache file.
+
 ***
 
 <a href="https://github.com/PhpGt/FileCache/actions" target="_blank">

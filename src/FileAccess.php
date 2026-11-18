@@ -30,6 +30,9 @@ class FileAccess {
 		if(!is_file($filePath)) {
 			throw new CacheInvalidException("$filePath (does not exist)");
 		}
+		if($secondsValidity === 0) {
+			return;
+		}
 		$fileModifiedTimestamp = filemtime($filePath);
 		if($fileModifiedTimestamp <= time() - $secondsValidity) {
 			throw new CacheInvalidException($filePath);
